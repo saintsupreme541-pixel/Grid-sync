@@ -1,0 +1,6 @@
+{
+  "name": "HackSphere GridControl - Smart Energy Microgrid & Demand Forecasting",
+  "description": "Smart energy microgrid demand forecasting engine with 24-hour predictive load curves, automated battery storage dispatch transitions, and real-time overload monitoring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackSphere 3.0 - Energy Grid Controller</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f7f6; color: #333; }
+        .container { max-width: 600px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #007bff; font-size: 24px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; }
+        button:hover { background: #0056b3; }
+        #result { margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 4px; display: none; }
+        .alert { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HackSphere 3.0 Energy Demand Dashboard</h1>
+        <p>Test real-time grid controller switching and load predictions.</p>
+
+        <div class="form-group">
+            <label>Timestamp:</label>
+            <input type="text" id="timestamp" value="2015-06-16 19:00:00">
+        </div>
+        <div class="form-group">
+            <label>Ambient Temperature (°C):</label>
+            <input type="number" id="temp" value="32.5">
+        </div>
+        <div class="form-group">
+            <label>Humidity (%):</label>
+            <input type="number" id="humidity" value="60.0">
+        </div>
+        <div class="form-group">
+            <label>Solar Irradiance (W/m²):</label>
+            <input type="number" id="solar" value="450">
+        </div>
+
+        <button onclick="evaluateGrid()">Evaluate Grid Status</button>
+
+        <div id="result">
+            <h3>Controller Decision:</h3>
+            <p>Predicted Demand: <span id="res-demand"></span> kW</p>
+            <p>Grid Mode: <span id="res-mode" style="font-weight: bold;"></span></p>
+            <p id="res-alert" class="alert"></p>
+        </div>
+    </div>
+
+    <script>
+        async function evaluateGrid() {
+            const payload = {
+                data: [
+                    {
+                        timestamp: document.getElementById('timestamp').value,
+                        ambient_temp_c: parseFloat(document.getElementById('temp').value),
+                        humidity_pct: parseFloat(document.getElementById('humidity').value),
+                        solar_irradiance_wm2: parseFloat(document.getElementById('solar').value)
+                    }
+                ]
+            };
+
+            try {
+                // Replace with your live AppSail backend URL once deployed
+                const response = await fetch('http://localhost:9000/api/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const resData = await response.json();
+                if(resData.results && resData.results.length > 0) {
+                    const r = resData.results[0];
+                    document.getElementById('res-demand').innerText = r.predicted_demand_kw;
+                    document.getElementById('res-mode').innerText = r.grid_mode;
+
+                    const alertBox = document.getElementById('res-alert');
+                    if(r.critical_overload_alert) {
+                        alertBox.innerText = "⚠ CRITICAL OVERLOAD ALERT (>= 200kW)!";
+                    } else {
+                        alertBox.innerText = "Status: Stable Operation";
+                        alertBox.style.color = "green";
+                    }
+                    document.getElementById('result').style.display = 'block';
+                }
+            } catch (err) {
+                alert("Failed to connect to backend server: " + err);
+            }
+        }
+    </script>
+</body>
+</html>
