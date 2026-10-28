@@ -285,11 +285,19 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-4">
+            <a
+              href="/Grid-sync.zip"
+              download="Grid-sync.zip"
+              className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold"
+            >
+              Download Repo (.zip)
+            </a>
+            <span aria-hidden="true">·</span>
             <button
               onClick={() => setIsQuickMlOpen(true)}
               className="hover:text-slate-300 transition-colors cursor-pointer"
             >
-              QuickML Specification
+              QuickML Spec
             </button>
             <span aria-hidden="true">·</span>
             <a
@@ -297,7 +305,7 @@ export default function App() {
               download="sample_test_input.csv"
               className="hover:text-slate-300 transition-colors"
             >
-              Download Sample CSV
+              Sample CSV
             </a>
           </div>
         </div>
